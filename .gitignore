@@ -3,3 +3,4 @@ plugins/
 platforms/
 _test/
 www/js/
+npm-debug.log
