@@ -9,7 +9,7 @@
     "babel-test": "cross-env BABEL_ENV=test babel -w ./app/**/*.js --out-dir ./_test --ignore ./**/*.test.js",
     "avajs-test": "ava --verbose --watch",
     "start": "webpack-dev-server",
-    "test": "ava --verbose"
+    "test": "cross-env BABEL_ENV=test babel ./app/**/*.js --out-dir ./_test --ignore ./**/*.test.js && ava --verbose"
   },
   "author": "Vagner F Santos",
   "license": "Apache-2.0",
