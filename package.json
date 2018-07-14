@@ -6,11 +6,12 @@
   "main": "index.js",
   "scripts": {
     "del-test": "del ./_test",
-    "babel": "cross-env BABEL_ENV=test babel ./app/**/*.js --out-dir ./_test --ignore ./**/*.test.js",
-    "babel-test": "watch -f './app/**/*.js' -r 'npm run babel'",
-    "avajs-test": "ava --verbose --watch",
+    "copy-test": "copy ./app ./_test",
+    "babel": "cross-env BABEL_ENV=test babel ./_test/**/*.js --overwrite --ignore ./**/*.test.js",
+    "babel-test": "watch -f './app/**/*.js' -r 'npm run copy-test && npm run babel'",
+    "avajs-test": "watch -f './app/**/*.js' -r 'ava --verbose --color'",
     "start": "webpack-dev-server",
-    "test": "npm run babel && ava --verbose"
+    "test": "webpack --config 'webpack.test.js' --dev"
   },
   "author": "Vagner F Santos",
   "license": "Apache-2.0",
@@ -35,6 +36,7 @@
     "ava": "1.0.0-beta.6",
     "babel-loader": "^8.0.0-beta.4",
     "cli-watch": "^1.0.6",
+    "copy-dir-cli": "0.0.3",
     "cross-env": "^5.2.0",
     "del-cli": "^1.1.0",
     "eslint": "^5.0.0",
