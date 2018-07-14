@@ -1,6 +1,7 @@
 node_modules/
 plugins/
 platforms/
-_test/
-www/js/
+www/
 npm-debug.log
+.cache/
+yarn-error.log
