@@ -1,17 +1,41 @@
 import test from 'ava';
-import Canvas from '../../_test/canvas';
+import Canvas from '../../_test/canvas.module';
+import CANVAS_ENUM from '../../_test/canvas.enum';
+import CANVAS_UTILS from '../../_test/canvas.utils';
+import CANVAS_SCOPE from '../../_test/canvas.scope';
+// import { CanvasError } from '../../_test/errors';
 
-test.skip('creates a default canvas element', (t) => {
-  const canvasReturn = Canvas.create();
-  t.deepEqual(canvasReturn, Canvas, 'ola');
+const { DEFAULT_CONFIGURATION, ERRORS } = CANVAS_ENUM;
+
+CANVAS_UTILS.createCanvasDOMElement = () => ({
+  getContext() { return {}; },
 });
 
-test.skip('creates a custom canvas element', (t) => {
-  const canvasElement = Canvas.create().getCanvasElement();
-  t.true(canvasElement);
+function resetCanvasCreation() {
+  CANVAS_SCOPE.STATE.IS_CANVAS_CREATED = false;
+}
+
+test('creates a canvas with default configuration', (t) => {
+  const canvas = Canvas.create();
+  const { width, height } = canvas.getCanvasConfiguration();
+
+  t.plan(2);
+  t.is(width, DEFAULT_CONFIGURATION.WIDTH);
+  t.is(height, DEFAULT_CONFIGURATION.HEIGHT);
 });
 
-test.skip('creates just one canvas element', (t) => {
+test('creates a canvas with custom configuration', (t) => {
+  resetCanvasCreation();
+
+  const config = Canvas.create({ height: 40 }).getCanvasConfiguration();
+
+  t.is(config.height, 40);
+});
+
+
+test('creates just one canvas element', (t) => {
+  resetCanvasCreation();
+
   Canvas.create({
     width: 400,
   });
@@ -26,32 +50,34 @@ test.skip('creates just one canvas element', (t) => {
   t.is(width, 400);
 });
 
-test.skip('returns canvas element reference', (t) => {
+test('returns canvas element reference', (t) => {
   const canvasElement = Canvas.getCanvasElement();
-  t.true(canvasElement);
+  t.truthy(canvasElement);
 });
 
-test.skip('returns canvas 2D context reference', (t) => {
+test('returns canvas 2D context reference', (t) => {
   const context2D = Canvas.getCanvasContext2D();
-  t.true(context2D);
+  t.truthy(context2D);
 });
 
-test.skip('changes the configuration after creation', (t) => {
+test('changes the configuration after creation', (t) => {
+  resetCanvasCreation();
+
   const canvas = Canvas.create({ width: 400 });
   canvas.updateConfiguration({ width: 600 });
 
-  const { width } = canvas.getConfiguration();
+  const { width } = canvas.getCanvasConfiguration();
   t.is(width, 600);
 });
 
-test.skip('validates the entries of custom configuration', (t) => {
+test('validates the entries of custom configuration', (t) => {
   t.plan(2);
 
   const widthError = t.throws(() => {
     Canvas.create({
       width: 'abc',
     });
-  });
+  }, Error);
 
   const heightError = t.throws(() => {
     Canvas.create({
@@ -59,11 +85,8 @@ test.skip('validates the entries of custom configuration', (t) => {
     });
   });
 
-  const thrownWithError = widthError.message.includes('width');
-  const thrownHeightError = heightError.message.includes('height');
-
-  t.true(thrownWithError, 'has width error');
-  t.true(thrownHeightError, 'has height error');
+  t.is(heightError.message, ERRORS.INVALID_CONFIGURATION_PARAMETER);
+  t.is(widthError.message, ERRORS.INVALID_CONFIGURATION_PARAMETER);
 });
 
 test.skip('appends the canvas to another element', (t) => {
@@ -71,22 +94,4 @@ test.skip('appends the canvas to another element', (t) => {
   const appended = Canvas.appendToElement('body');
 
   t.true(appended);
-});
-
-test.skip('preserves the integrity of canvas element', (t) => {
-  Canvas.create();
-  const error = t.throws(() => {
-    Canvas.canvasElement = null;
-  });
-
-  t.is(error.message, '');
-});
-
-test.skip('preserves the integrity of 2D context', (t) => {
-  Canvas.create();
-  const error = t.throws(() => {
-    Canvas.canvasContext2D = null;
-  });
-
-  t.is(error.message, '');
 });
